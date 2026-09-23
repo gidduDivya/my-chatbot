@@ -8,11 +8,14 @@ import chatRoutes from './src/routes/chat.routes.js'
 
 const app = express()
 const port = Number(process.env.PORT) || 5000
-const configuredClientUrl = process.env.CLIENT_URL || 'http://localhost:5173'
+const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
+	.split(',')
+	.map((origin) => origin.trim())
+	.filter(Boolean)
 
 app.use(cors({
 	origin: (origin, callback) => {
-		if (!origin || origin === configuredClientUrl || /^http:\/\/localhost:\d+$/.test(origin)) {
+		if (!origin || allowedOrigins.includes(origin) || /^http:\/\/localhost:\d+$/.test(origin)) {
 			return callback(null, true)
 		}
 		return callback(new Error('CORS origin not allowed'))
